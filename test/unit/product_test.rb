@@ -4,10 +4,10 @@ class ProductTest < ActiveSupport::TestCase
 	fixtures :products
 
 	def new_product(image_url)
-		Product.new(title: 				"My Book Title",
-								description:	"yyy",
-								price: 				1,
-								image_url:		image_url)
+		Product.new(:title => 				"My Book Title",
+								:description =>	"yyy",
+								:price => 				1,
+								:image_url =>		image_url)
 	end
 
 	test "image url" do
@@ -33,9 +33,9 @@ class ProductTest < ActiveSupport::TestCase
 	end
 
 	test "product price must be positive" do
-		product = Product.new(title: 				"My Book Title",
-													description:	"yyy",
-													image_url:		"zzz.jpg")
+		product = Product.new(:title => 				"My Book Title",
+													:description =>	"yyy",
+													:image_url =>		"zzz.jpg")
 		product.price = -1
 		assert product.invalid?
 		assert_equal "must be greater than or equal to 0.01",
@@ -51,12 +51,21 @@ class ProductTest < ActiveSupport::TestCase
 	end
 
 	test "product is not valid without a unique title" do
-		product = new Product.new(title:  		 products(:ruby).title,
-															description: "yyy",
-															price: 			 1,
-															image_url: 	 "fred.gif")
+		product = Product.new(:title => 		 products(:ruby).title,
+													:description =>"yyy",
+													:price =>			 1,
+													:image_url =>	 "fred.gif")
 		assert !product.save
 		assert_equal I18n.translate('activerecord.errors.messages.taken'),
 								 product.errors[:title].join('; ')
+	end
+
+	test "product name muct be longer than 10 characters" do
+		product = Product.new(:title => 'Too Short',
+													:description => "yyy",
+													:price => 1,
+													:image_url => "fred.gif")
+		assert product.invalid?
+	end
 
 end
